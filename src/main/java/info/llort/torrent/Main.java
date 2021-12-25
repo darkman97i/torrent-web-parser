@@ -30,6 +30,7 @@ public class Main {
 		options.addOption("g", "geckoDriverPath", true, "Gecko driver path");
 		options.addOption("f", "filters", true, "URL filter values separated by comma");
 		options.addOption("t", "timeout", true, "Download file timeout");
+		options.addOption("d", "dstPath", true, "Download File system path");
 		options.addOption("h", "help", false, "Show help message");
 
 		try {
@@ -46,6 +47,7 @@ public class Main {
 				String urlWebToParse = Config.URL_WEB_TO_PARSE;
 				String geckoDriverPath = Config.FIREFOX_DRIVER_PATH;
 				long downloadTimeOut = Config.FILE_DOWNLOAD_TIMEOUT;
+				String dstPath = Config.FILESYSTEM_DOWNLOAD_PATH;
 				List<String> filters = new ArrayList<>();
 				if (cmd.hasOption("u")) {
 					urlWebToParse = cmd.getOptionValue("u");
@@ -68,13 +70,18 @@ public class Main {
 					Console.printlnLog("Download file timeout: " + downloadTimeOut, YELLOW);
 				}
 
+				if (cmd.hasOption("d")) {
+					dstPath =  cmd.getOptionValue("d");
+					Console.printlnLog("Download file system path: " + dstPath, YELLOW);
+				}
+
 				// Creating the driver
 				System.setProperty("webdriver.gecko.driver", geckoDriverPath);
 				// firefox profile to autosave
 				FirefoxOptions firefoxOptions = new FirefoxOptions();
 				FirefoxProfile fxProfile = new FirefoxProfile();
 				fxProfile.setPreference("browser.download.folderList", 2);
-				fxProfile.setPreference("browser.download.dir", Config.FILESYSTEM_DOWNLOAD_PATH);
+				fxProfile.setPreference("browser.download.dir", dstPath);
 				fxProfile.setPreference("browser.helperApps.neverAsk.saveToDisk","application/octet-stream");
 				fxProfile.setPreference("pdfjs.enabledCache.state",false);
 				firefoxOptions.setProfile(fxProfile);
@@ -102,11 +109,13 @@ public class Main {
 			}
 		} catch (ParseException e) {
 			Console.println("Parse exception: " + e.getMessage(), RED);
+			e.printStackTrace();
 			Console.println();
 			Console.reset();
 			printHelp(options);
 		} catch (Exception e) {
 			Console.println("Unexpected exception: " + e.getMessage(), RED);
+			e.printStackTrace();
 			Console.reset();
 		} finally {
 			AnsiConsole.systemUninstall();
