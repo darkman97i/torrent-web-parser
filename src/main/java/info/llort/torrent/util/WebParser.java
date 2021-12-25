@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 public class WebParser {
 	public static Set<String> findMainPageLinks(String url, String geckoDriverPath, List<String> filters, WebDriver driver) throws IOException {
-		// Inspired by https://www.javatpoint.com/selenium-webdriver-running-test-on-chrome-browser
+		// Inspired by https://www.javatpoint.com/selenium-webdriver-running-test-on-firefox-browser-gecko-driver
 		driver.get(url);
 
 		Set<String> links = new HashSet<>();
