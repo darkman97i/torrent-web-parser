@@ -6,6 +6,8 @@ import org.apache.commons.cli.*;
 import org.fusesource.jansi.AnsiConsole;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ public class Main {
 		options.addOption("u", "url", true, "Web URL");
 		options.addOption("g", "geckoDriverPath", true, "Gecko driver path");
 		options.addOption("f", "filters", true, "URL filter values separated by comma");
+		options.addOption("t", "timeout", true, "Download file timeout");
 		options.addOption("h", "help", false, "Show help message");
 
 		try {
@@ -42,6 +45,7 @@ public class Main {
 			}else {
 				String urlWebToParse = Config.URL_WEB_TO_PARSE;
 				String geckoDriverPath = Config.FIREFOX_DRIVER_PATH;
+				long downloadTimeOut = Config.FILE_DOWNLOAD_TIMEOUT;
 				List<String> filters = new ArrayList<>();
 				if (cmd.hasOption("u")) {
 					urlWebToParse = cmd.getOptionValue("u");
@@ -55,11 +59,27 @@ public class Main {
 				if (cmd.hasOption("f")) {
 					String filtersValue =  cmd.getOptionValue("f");
 					filters =  Arrays.asList(filtersValue.split(","));
+					Console.printlnLog("Filters: " + filtersValue, YELLOW);
+				}
+
+				if (cmd.hasOption("t")) {
+					String timeoutValue =  cmd.getOptionValue("t");
+					downloadTimeOut = Long.parseLong(timeoutValue);
+					Console.printlnLog("Download file timeout: " + downloadTimeOut, YELLOW);
 				}
 
 				// Creating the driver
 				System.setProperty("webdriver.gecko.driver", geckoDriverPath);
-				WebDriver driver = new FirefoxDriver();
+				// firefox profile to autosave
+				FirefoxOptions firefoxOptions = new FirefoxOptions();
+				FirefoxProfile fxProfile = new FirefoxProfile();
+				fxProfile.setPreference("browser.download.folderList", 2);
+				fxProfile.setPreference("browser.download.dir", Config.FILESYSTEM_DOWNLOAD_PATH);
+				fxProfile.setPreference("browser.helperApps.neverAsk.saveToDisk","application/octet-stream");
+				fxProfile.setPreference("pdfjs.enabledCache.state",false);
+				firefoxOptions.setProfile(fxProfile);
+
+				WebDriver driver = new FirefoxDriver(firefoxOptions);
 
 				Set<String> mainPageLinks = WebParser.findMainPageLinks(urlWebToParse, geckoDriverPath, filters, driver);
 				for (String link : mainPageLinks) {
@@ -74,7 +94,11 @@ public class Main {
 				Set<String> downloadTorrentLinks = WebParser.downloadTorrentLinks(torrentPageLinks, driver);
 				for (String link : downloadTorrentLinks) {
 					Console.println("Download link: " + link, WHITE);
+					WebParser.downloadTorrentFile(link, driver, downloadTimeOut);
 				}
+
+				// closing the driver
+				driver.close();
 			}
 		} catch (ParseException e) {
 			Console.println("Parse exception: " + e.getMessage(), RED);

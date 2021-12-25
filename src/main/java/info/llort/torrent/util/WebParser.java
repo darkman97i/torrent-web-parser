@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,5 +77,17 @@ public class WebParser {
 			}
 		}
 		return links;
+	}
+
+	public static void downloadTorrentFile(String link, WebDriver driver, long timeOut) throws InterruptedException {
+		try {
+			// Set timeout otherwise the driver lock
+			driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeOut));
+			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(timeOut));
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeOut));
+			driver.navigate().to(link);
+		} catch (Exception e) {
+			// Silent error
+		}
 	}
 }
