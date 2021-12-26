@@ -14,7 +14,27 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WebParser {
+import static org.fusesource.jansi.Ansi.Color.WHITE;
+
+public class PctmixWebParser {
+	public static void capture(String urlWebToParse, String geckoDriverPath, List<String> filters, long downloadTimeOut, WebDriver driver) throws IOException, InterruptedException {
+		Set<String> mainPageLinks = findMainPageLinks(urlWebToParse, geckoDriverPath, filters, driver);
+		for (String link : mainPageLinks) {
+			Console.println("Main page link: " + link, WHITE);
+		}
+
+		Set<String> torrentPageLinks = findPageTorrentLinks(mainPageLinks, driver);
+		for (String link : torrentPageLinks) {
+			Console.println("Torrent page link: " + link, WHITE);
+		}
+
+		Set<String> downloadTorrentLinks = downloadTorrentLinks(torrentPageLinks, driver);
+		for (String link : downloadTorrentLinks) {
+			Console.println("Download link: " + link, WHITE);
+			downloadTorrentFile(link, driver, downloadTimeOut);
+		}
+	}
+
 	public static Set<String> findMainPageLinks(String url, String geckoDriverPath, List<String> filters, WebDriver driver) throws IOException {
 		// Inspired by https://www.javatpoint.com/selenium-webdriver-running-test-on-firefox-browser-gecko-driver
 		driver.get(url);
@@ -26,6 +46,7 @@ public class WebParser {
 			String value = element.attr("href");
 			if (value.startsWith("https:")) {
 				if ((value.contains("/descargar/peliculas-castellano/") && value.contains("blurayrip")) ||
+					(value.contains("/descargar/peliculas-x264-mkv/") && value.contains("bluray")) ||
 					value.contains("/descargar/serie/") ||
 					value.contains("/descargar/serie-en-hd/")) {
 					for (String filter : filters) {
