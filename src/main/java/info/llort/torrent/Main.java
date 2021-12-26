@@ -1,7 +1,7 @@
 package info.llort.torrent;
 
 import info.llort.torrent.util.Console;
-import info.llort.torrent.util.WebParser;
+import info.llort.torrent.util.PctmixWebParser;
 import org.apache.commons.cli.*;
 import org.fusesource.jansi.AnsiConsole;
 import org.openqa.selenium.WebDriver;
@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import static org.fusesource.jansi.Ansi.Color.*;
 
@@ -88,21 +87,7 @@ public class Main {
 
 				WebDriver driver = new FirefoxDriver(firefoxOptions);
 
-				Set<String> mainPageLinks = WebParser.findMainPageLinks(urlWebToParse, geckoDriverPath, filters, driver);
-				for (String link : mainPageLinks) {
-					Console.println("Main page link: " + link, WHITE);
-				}
-
-				Set<String> torrentPageLinks = WebParser.findPageTorrentLinks(mainPageLinks, driver);
-				for (String link : torrentPageLinks) {
-					Console.println("Torrent page link: " + link, WHITE);
-				}
-
-				Set<String> downloadTorrentLinks = WebParser.downloadTorrentLinks(torrentPageLinks, driver);
-				for (String link : downloadTorrentLinks) {
-					Console.println("Download link: " + link, WHITE);
-					WebParser.downloadTorrentFile(link, driver, downloadTimeOut);
-				}
+				PctmixWebParser.capture(urlWebToParse, geckoDriverPath, filters, downloadTimeOut, driver);
 
 				// closing the driver
 				driver.close();
