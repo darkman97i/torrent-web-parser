@@ -47,8 +47,10 @@ public class PctmixWebParser {
 			if (value.startsWith("https:")) {
 				if ((value.contains("/descargar/peliculas-castellano/") && value.contains("blurayrip")) ||
 					(value.contains("/descargar/peliculas-x264-mkv/") && value.contains("bluray")) ||
+					(value.contains("/descargar/cine-alta-definicion-hd/") && value.contains("bluray")) ||
 					value.contains("/descargar/serie/") ||
-					value.contains("/descargar/serie-en-hd/")) {
+					value.contains("/descargar/serie-en-hd/") ||
+					value.contains("/descargar/serie-4k/")) {
 					for (String filter : filters) {
 						if (value.toLowerCase().contains(filter.toLowerCase())) {
 							// /descargar/ must be replaced by /descargar/torrent/

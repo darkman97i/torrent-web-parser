@@ -17,6 +17,16 @@ unzip torrent-web-parser-1.0.zip
 java -jar torrent-web-parser -g /utils/torrent-web-parser-1.0/geckodriver -d /utils/torrent-web-parser-1.0 -f mar,navidad
 ```
 
+### Parameters
+```
+ -d,--dstPath <arg>           Download File system path
+ -f,--filters <arg>           URL filter values separated by comma
+ -g,--geckoDriverPath <arg>   Gecko driver path
+ -h,--help                    Show help message
+ -t,--timeout <arg>           Download file timeout
+ -u,--url <arg>               Web URL
+```
+
 ## Additional information
 * [Selenium webdriver information](https://www.javatpoint.com/selenium-webdriver)
 * [Selenium firefox browser test](https://www.javatpoint.com/selenium-webdriver-running-test-on-firefox-browser-gecko-driver)
