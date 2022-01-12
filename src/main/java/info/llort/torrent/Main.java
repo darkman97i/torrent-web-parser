@@ -52,7 +52,7 @@ public class Main {
 					urlWebToParse = cmd.getOptionValue("u");
 					Console.printlnLog("Overridden URL: " + urlWebToParse, YELLOW);
 				}
-				if (cmd.hasOption("u")) {
+				if (cmd.hasOption("g")) {
 					geckoDriverPath = cmd.getOptionValue("g");
 					Console.printlnLog("Overridden Gecko driver path: " + geckoDriverPath, YELLOW);
 				}
