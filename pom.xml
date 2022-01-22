@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>info.llort</groupId>
   <artifactId>torrent-web-parser</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
   <name>Torrent web parser</name>
 
   <developers>
@@ -119,6 +119,16 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
