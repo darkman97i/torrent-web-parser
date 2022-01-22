@@ -2,15 +2,23 @@ package info.llort.torrent;
 
 import info.llort.torrent.util.Console;
 import info.llort.torrent.util.PctmixWebParser;
+import info.llort.torrent.util.PctmixWebParserV2;
+import net.lightbody.bmp.client.ClientUtil;
+import net.lightbody.bmp.proxy.CaptureType;
 import org.apache.commons.cli.*;
 import org.fusesource.jansi.AnsiConsole;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.remote.CapabilityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import net.lightbody.bmp.BrowserMobProxy;
+import net.lightbody.bmp.BrowserMobProxyServer;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,6 +82,16 @@ public class Main {
 					Console.printlnLog("Download file system path: " + dstPath, YELLOW);
 				}
 
+				// Creating proxy
+				BrowserMobProxy proxy = new BrowserMobProxyServer();
+				proxy.start(8080);
+				Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
+
+				String hostIp = Inet4Address.getLocalHost().getHostAddress();
+				seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
+				seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
+				proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
+
 				// Creating the driver
 				System.setProperty("webdriver.gecko.driver", geckoDriverPath);
 				// firefox profile to autosave
@@ -84,10 +102,13 @@ public class Main {
 				fxProfile.setPreference("browser.helperApps.neverAsk.saveToDisk","application/octet-stream");
 				fxProfile.setPreference("pdfjs.enabledCache.state",false);
 				firefoxOptions.setProfile(fxProfile);
+				// Setting the proxy
+				firefoxOptions.setCapability(CapabilityType.PROXY, seleniumProxy);
+				firefoxOptions.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 
 				WebDriver driver = new FirefoxDriver(firefoxOptions);
 
-				PctmixWebParser.capture(urlWebToParse, geckoDriverPath, filters, downloadTimeOut, driver);
+				PctmixWebParserV2.capture(urlWebToParse, geckoDriverPath, filters, downloadTimeOut, driver, proxy);
 
 				// closing the driver
 				driver.close();
