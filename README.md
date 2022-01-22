@@ -12,9 +12,9 @@ Utility to get torrent download links from the web without advertisements:
 ```
 mkdir /utils
 cd /utils
-wget https://github.com/darkman97i/torrent-web-parser/releases/download/v.1.0/torrent-web-parser-1.0.zip
-unzip torrent-web-parser-1.0.zip
-java -jar torrent-web-parser -g /utils/torrent-web-parser-1.0/geckodriver -d /utils/torrent-web-parser-1.0 -f mar,navidad
+wget https://github.com/darkman97i/torrent-web-parser/releases/download/v.1.1/torrent-web-parser-1.1.zip
+unzip torrent-web-parser-1.1.zip
+java -jar torrent-web-parser -g /utils/torrent-web-parser-1.0/geckodriver -d /utils/torrent-web-parser-1.1 -f mar,navidad
 ```
 
 ### Parameters
