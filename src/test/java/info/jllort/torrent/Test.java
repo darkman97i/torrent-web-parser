@@ -1,4 +1,4 @@
-package info.jllort;
+package info.jllort.torrent;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

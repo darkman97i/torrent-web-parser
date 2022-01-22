@@ -1,5 +1,7 @@
 package info.llort.torrent.util;
 
+import com.google.common.net.HttpHeaders;
+import info.llort.torrent.bean.PageLinkInfo;
 import net.lightbody.bmp.BrowserMobProxy;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,19 +19,19 @@ import java.util.regex.Pattern;
 
 import static org.fusesource.jansi.Ansi.Color.WHITE;
 
-public class PctmixWebParser {
+public class PctmixWebParserV2 {
 	public static void capture(String urlWebToParse, String geckoDriverPath, List<String> filters, long downloadTimeOut, WebDriver driver, BrowserMobProxy proxy) throws IOException, InterruptedException {
 		Set<String> mainPageLinks = findMainPageLinks(urlWebToParse, geckoDriverPath, filters, driver);
 		for (String link : mainPageLinks) {
 			Console.println("Main page link: " + link, WHITE);
 		}
 
-		Set<String> torrentPageLinks = findPageTorrentLinks(mainPageLinks, driver);
-		for (String link : torrentPageLinks) {
-			Console.println("Torrent page link: " + link, WHITE);
+		Set<PageLinkInfo> torrentPageLinks = findPageTorrentLinks(mainPageLinks, driver);
+		for (PageLinkInfo pli : torrentPageLinks) {
+			Console.println("Torrent page link: " + pli.getUrl(), WHITE);
 		}
 
-		Set<String> downloadTorrentLinks = downloadTorrentLinks(torrentPageLinks, driver);
+		Set<String> downloadTorrentLinks = downloadTorrentLinks(torrentPageLinks, driver, proxy);
 		for (String link : downloadTorrentLinks) {
 			Console.println("Download link: " + link, WHITE);
 			downloadTorrentFile(link, driver, downloadTimeOut);
@@ -67,8 +69,8 @@ public class PctmixWebParser {
 		return links;
 	}
 
-	public static Set<String> findPageTorrentLinks(Set<String> pageLinks, WebDriver driver) throws IOException {
-		Set<String> links = new HashSet<>();
+	public static Set<PageLinkInfo> findPageTorrentLinks(Set<String> pageLinks, WebDriver driver) throws IOException {
+		Set<PageLinkInfo> links = new HashSet<>();
 		for (String link :  pageLinks) {
 			driver.get(link);
 
@@ -80,16 +82,21 @@ public class PctmixWebParser {
 			while (matcher.find()) {
 				String tLink = matcher.group(1);
 				tLink = "https:" + tLink; // add https at the begining
-				links.add(tLink);
+				PageLinkInfo pli = new PageLinkInfo();
+				pli.setUrl(tLink);
+				pli.setReferer(link);
+				links.add(pli);
 			}
 		}
 		return links;
 	}
 
-	public static Set<String> downloadTorrentLinks(Set<String> pageLinks, WebDriver driver) throws IOException {
+	public static Set<String> downloadTorrentLinks(Set<PageLinkInfo> pageLinks, WebDriver driver,  BrowserMobProxy proxy) throws IOException {
 		Set<String> links = new HashSet<>();
-		for (String link :  pageLinks) {
-			driver.get(link);
+		for (PageLinkInfo pli :  pageLinks) {
+			// Setting referer before jump to the page
+			proxy.addHeader(HttpHeaders.REFERER, pli.getReferer());
+			driver.get(pli.getUrl());
 
 			Document doc = Jsoup.parse(driver.getPageSource());
 			Elements elements = doc.select("a[href]");

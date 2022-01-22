@@ -31,3 +31,6 @@ java -jar torrent-web-parser -g /utils/torrent-web-parser-1.0/geckodriver -d /ut
 * [Selenium webdriver information](https://www.javatpoint.com/selenium-webdriver)
 * [Selenium firefox browser test](https://www.javatpoint.com/selenium-webdriver-running-test-on-firefox-browser-gecko-driver)
 * [Gecko releases](https://github.com/mozilla/geckodriver/releases)
+* [Proxy sample with selenium](https://www.swtestacademy.com/browsermob-proxy-selenium-java/)
+  * [browsermob-proxy](https://github.com/lightbody/browsermob-proxy)
+  * [Modify request header in selenium](https://sqa.stackexchange.com/questions/37227/how-to-modify-http-request-header-in-selenium-webdriver-with-java)
