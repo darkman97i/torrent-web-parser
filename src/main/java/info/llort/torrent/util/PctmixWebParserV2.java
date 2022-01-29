@@ -21,12 +21,12 @@ import static org.fusesource.jansi.Ansi.Color.WHITE;
 
 public class PctmixWebParserV2 {
 	public static void capture(String urlWebToParse, String geckoDriverPath, List<String> filters, long downloadTimeOut, WebDriver driver, BrowserMobProxy proxy) throws IOException, InterruptedException {
-		Set<String> mainPageLinks = findMainPageLinks(urlWebToParse, geckoDriverPath, filters, driver);
-		for (String link : mainPageLinks) {
-			Console.println("Main page link: " + link, WHITE);
+		Set<PageLinkInfo> mainPageLinks = findMainPageLinks(urlWebToParse, geckoDriverPath, filters, driver);
+		for (PageLinkInfo pli : mainPageLinks) {
+			Console.println("Main page link: " + pli.getUrl(), WHITE);
 		}
 
-		Set<PageLinkInfo> torrentPageLinks = findPageTorrentLinks(mainPageLinks, driver);
+		Set<PageLinkInfo> torrentPageLinks = findPageTorrentLinks(mainPageLinks, driver, proxy);
 		for (PageLinkInfo pli : torrentPageLinks) {
 			Console.println("Torrent page link: " + pli.getUrl(), WHITE);
 		}
@@ -38,11 +38,11 @@ public class PctmixWebParserV2 {
 		}
 	}
 
-	public static Set<String> findMainPageLinks(String url, String geckoDriverPath, List<String> filters, WebDriver driver) throws IOException {
+	public static Set<PageLinkInfo> findMainPageLinks(String url, String geckoDriverPath, List<String> filters, WebDriver driver) throws IOException {
 		// Inspired by https://www.javatpoint.com/selenium-webdriver-running-test-on-firefox-browser-gecko-driver
 		driver.get(url);
 
-		Set<String> links = new HashSet<>();
+		Set<PageLinkInfo> links = new HashSet<>();
 		Document doc = Jsoup.parse(driver.getPageSource());
 		Elements elements = doc.select("a[href]");
 		for (Element element : elements) {
@@ -57,8 +57,11 @@ public class PctmixWebParserV2 {
 					for (String filter : filters) {
 						if (value.toLowerCase().contains(filter.toLowerCase())) {
 							// /descargar/ must be replaced by /descargar/torrent/
+							PageLinkInfo pli = new PageLinkInfo();
+							pli.setReferer(value);
 							value = value.replace("/descargar/", "/descargar/torrent/");
-							links.add(value);
+							pli.setUrl(value);
+							links.add(pli);
 							break;
 						}
 					}
@@ -69,10 +72,12 @@ public class PctmixWebParserV2 {
 		return links;
 	}
 
-	public static Set<PageLinkInfo> findPageTorrentLinks(Set<String> pageLinks, WebDriver driver) throws IOException {
+	public static Set<PageLinkInfo> findPageTorrentLinks(Set<PageLinkInfo> pageLinks, WebDriver driver, BrowserMobProxy proxy) throws IOException {
 		Set<PageLinkInfo> links = new HashSet<>();
-		for (String link :  pageLinks) {
-			driver.get(link);
+		for (PageLinkInfo pli :  pageLinks) {
+			// Setting referer before jump to the page
+			proxy.addHeader(HttpHeaders.REFERER, pli.getReferer());
+			driver.get(pli.getUrl());
 
 			String htmlContent = driver.getPageSource();
 			//System.out.println(htmlContent);
@@ -82,16 +87,16 @@ public class PctmixWebParserV2 {
 			while (matcher.find()) {
 				String tLink = matcher.group(1);
 				tLink = "https:" + tLink; // add https at the begining
-				PageLinkInfo pli = new PageLinkInfo();
-				pli.setUrl(tLink);
-				pli.setReferer(link);
-				links.add(pli);
+				PageLinkInfo newPli = new PageLinkInfo();
+				newPli.setUrl(tLink);
+				newPli.setReferer(pli.getUrl());
+				links.add(newPli);
 			}
 		}
 		return links;
 	}
 
-	public static Set<String> downloadTorrentLinks(Set<PageLinkInfo> pageLinks, WebDriver driver,  BrowserMobProxy proxy) throws IOException {
+	public static Set<String> downloadTorrentLinks(Set<PageLinkInfo> pageLinks, WebDriver driver, BrowserMobProxy proxy) throws IOException {
 		Set<String> links = new HashSet<>();
 		for (PageLinkInfo pli :  pageLinks) {
 			// Setting referer before jump to the page
