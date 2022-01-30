@@ -1,8 +1,9 @@
 package info.llort.torrent;
 
 import info.llort.torrent.util.Console;
-import info.llort.torrent.util.PctmixWebParser;
 import info.llort.torrent.util.PctmixWebParserV2;
+import net.lightbody.bmp.BrowserMobProxy;
+import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.proxy.CaptureType;
 import org.apache.commons.cli.*;
@@ -15,15 +16,14 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import net.lightbody.bmp.BrowserMobProxy;
-import net.lightbody.bmp.BrowserMobProxyServer;
 
 import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.fusesource.jansi.Ansi.Color.*;
+import static org.fusesource.jansi.Ansi.Color.RED;
+import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 public class Main {
 	private static final Logger log = LoggerFactory.getLogger(Main.class);
@@ -112,6 +112,9 @@ public class Main {
 
 				// closing the driver
 				driver.close();
+
+				// closing proxy
+				proxy.abort();
 			}
 		} catch (ParseException e) {
 			Console.println("Parse exception: " + e.getMessage(), RED);
