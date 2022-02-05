@@ -1,6 +1,6 @@
 # Torrent web parser
 Utility to get torrent download links from the web without advertisements:
-* https://atomixhq.net/
+* https://atomixhq.art
 
 ## Prerequisites
 * Install Java jdk 1.8
@@ -12,9 +12,9 @@ Utility to get torrent download links from the web without advertisements:
 ```
 mkdir /utils
 cd /utils
-wget https://github.com/darkman97i/torrent-web-parser/releases/download/v.1.3/torrent-web-parser-1.3.zip
-unzip torrent-web-parser-1.3.zip
-java -jar torrent-web-parser -g /utils/torrent-web-parser-1.3/geckodriver -d /utils/torrent-web-parser-1.3 -f mar,navidad
+wget https://github.com/darkman97i/torrent-web-parser/releases/download/v.1.4/torrent-web-parser-1.4.zip
+unzip torrent-web-parser-1.4.zip
+java -jar torrent-web-parser -g /utils/torrent-web-parser-1.4/geckodriver -d /utils/torrent-web-parser-1.4 -f universe,dry
 ```
 
 ### Parameters
@@ -34,3 +34,5 @@ java -jar torrent-web-parser -g /utils/torrent-web-parser-1.3/geckodriver -d /ut
 * [Proxy sample with selenium](https://www.swtestacademy.com/browsermob-proxy-selenium-java/)
   * [browsermob-proxy](https://github.com/lightbody/browsermob-proxy)
   * [Modify request header in selenium](https://sqa.stackexchange.com/questions/37227/how-to-modify-http-request-header-in-selenium-webdriver-with-java)
+* [Java regular expressions](https://www.vogella.com/tutorials/JavaRegularExpressions/article.html)
+* [Execute javascript with selenium](https://www.guru99.com/execute-javascript-selenium-webdriver.html)
