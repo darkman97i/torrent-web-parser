@@ -1,7 +1,7 @@
 package info.llort.torrent;
 
 import info.llort.torrent.util.Console;
-import info.llort.torrent.util.PctmixWebParserV3;
+import info.llort.torrent.util.PctmixWebParserV4;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
@@ -108,7 +108,7 @@ public class Main {
 
 				WebDriver driver = new FirefoxDriver(firefoxOptions);
 
-				PctmixWebParserV3.capture(urlWebToParse, geckoDriverPath, filters, downloadTimeOut, driver, proxy);
+				PctmixWebParserV4.capture(urlWebToParse, geckoDriverPath, filters, downloadTimeOut, driver, proxy);
 
 				// closing the driver
 				driver.close();
