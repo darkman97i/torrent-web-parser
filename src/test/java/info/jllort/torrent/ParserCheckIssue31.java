@@ -26,8 +26,8 @@ public class ParserCheckIssue31 {
 		String dstPath = Config.FILESYSTEM_DOWNLOAD_PATH;
 		long timeOut = Config.FILE_DOWNLOAD_TIMEOUT;
 
-		String referer  = "https://atomixhq.art/descargar/torrent/serie/el-pacificador/temporada-1/capitulo-08/";
-		String link = "https://atomtt.com/t_download/168542/el-pacificador---temporada-1/";
+		String referer  = "https://atomixhq.art/descargar/torrent/peliculas-castellano/venganza-a-golpes-2022-/blurayrip-ac3-5-1/";
+		String link = "https://atomtt.com/t_download/168581/venganza-a-golpes--2022-/";
 
 		// Creating proxy
 		BrowserMobProxy proxy = new BrowserMobProxyServer();
@@ -82,9 +82,9 @@ public class ParserCheckIssue31 {
 			System.out.println("intValue found: " + intValue);
 			if (driver instanceof JavascriptExecutor) {
 				// Referer must be atomtt
-				proxy.addHeader(HttpHeaders.REFERER, "https://atomtt.com/t_download/168542/el-pacificador---temporada-1/");
+				proxy.addHeader(HttpHeaders.REFERER, link);
 				// Javascript request to be executed by selenium
-				String js = "var values = {'t':'168542'};\n"; // the variable
+				String js = "var values = {'t':'168581'};\n"; // the variable
 				js += "var xhr = new XMLHttpRequest();\n";
 				js += "xhr.open('POST', 'https://atomtt.com/to.php', false);\n";
 				js += "xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');\n";
@@ -95,13 +95,15 @@ public class ParserCheckIssue31 {
 				System.out.println("Result value of cal to top: " + result);
 //				result = ((JavascriptExecutor) driver).executeScript("alert('Welcome to Guru99');");
 				// download URl = https://atomixhq.art/t_download/temp/17022022/168542/El-Pacificador---Temporada-1--HDTV.torrent?md5=b611CNys8mldMTSN_atN6A&expires=1645101721
-				String torrentFileLinkValue = "https://atomixhq.art/t_download/" + result;
+				String torrentFileLinkValue = "https://atomixhq.art" + result;
 				System.out.println(torrentFileLinkValue);
 				driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeOut));
 				driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(timeOut));
 				driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeOut));
 				// Other referer
-				proxy.addHeader(HttpHeaders.REFERER, link); // Referer is the page what contains the torrent link //atomtt etc...
+				proxy.addHeader(HttpHeaders.REFERER, "https://atomtt.com/"); // Referer is the page what contains the torrent link //atomtt etc...
+				proxy.addHeader("authority", "atomixhq.art");
+				proxy.addHeader("user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36");
 				driver.navigate().to(torrentFileLinkValue);
 			}
 		}

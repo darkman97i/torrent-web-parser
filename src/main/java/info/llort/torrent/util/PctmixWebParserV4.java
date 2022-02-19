@@ -32,11 +32,11 @@ public class PctmixWebParserV4 {
 			Console.println("Torrent page link: " + pli.getUrl(), WHITE);
 		}
 
-		Set<PageLinkInfo> downloadTorrentLinks = downloadTorrentLinks(torrentPageLinks, driver, proxy);
-		for (PageLinkInfo pli : downloadTorrentLinks) {
-			Console.println("Download link: " + pli.getUrl(), WHITE);
-			downloadTorrentFile(pli, driver, downloadTimeOut, proxy);
-		}
+		Set<PageLinkInfo> downloadTorrentLinks = downloadTorrentLinks(torrentPageLinks, driver, proxy, downloadTimeOut);
+//		for (PageLinkInfo pli : downloadTorrentLinks) {
+//			Console.println("Download link: " + pli.getUrl(), WHITE);
+//			downloadTorrentFile(pli, driver, downloadTimeOut, proxy);
+//		}
 	}
 
 	public static Set<PageLinkInfo> findMainPageLinks(String url, String geckoDriverPath, List<String> filters, WebDriver driver) throws IOException {
@@ -97,7 +97,7 @@ public class PctmixWebParserV4 {
 		return links;
 	}
 
-	public static Set<PageLinkInfo> downloadTorrentLinks(Set<PageLinkInfo> pageLinks, WebDriver driver, BrowserMobProxy proxy) throws IOException {
+	public static Set<PageLinkInfo> downloadTorrentLinks(Set<PageLinkInfo> pageLinks, WebDriver driver, BrowserMobProxy proxy, long downloadTimeOut) throws IOException, InterruptedException {
 		Set<PageLinkInfo> links = new HashSet<>();
 		for (PageLinkInfo pli :  pageLinks) {
 			// Setting referer before jump to the page
@@ -125,12 +125,14 @@ public class PctmixWebParserV4 {
 					Console.println("executing javascript: " + js, YELLOW);
 					Object result = ((JavascriptExecutor) driver).executeScript(js);
 					Console.println("Javascript result: " + js, GREEN);
-					String torrentFileLinkValue = "https://atomixhq.art/t_download/" + result;
+					String torrentFileLinkValue = "https://atomixhq.art" + result;
 					Console.println("torrentFileLinkValue: " + torrentFileLinkValue, GREEN);
 					PageLinkInfo newPli = new PageLinkInfo();
 					newPli.setUrl(torrentFileLinkValue);
 					newPli.setReferer(pli.getUrl());
 					links.add(newPli);
+					// Must donwload here because  downtime
+					downloadTorrentFile(newPli, driver, downloadTimeOut, proxy);
 				}
 
 			} else {
@@ -143,7 +145,9 @@ public class PctmixWebParserV4 {
 	public static void downloadTorrentFile(PageLinkInfo pli, WebDriver driver, long timeOut, BrowserMobProxy proxy) throws InterruptedException {
 		try {
 			// Referer must be atomtt
-			proxy.addHeader(HttpHeaders.REFERER, pli.getReferer());
+			proxy.addHeader(HttpHeaders.REFERER, "https://atomtt.com/"); // Referer is the page what contains the torrent link //atomtt etc...
+			proxy.addHeader("authority", "atomixhq.art");
+			proxy.addHeader("user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36");
 			// Set timeout otherwise the driver lock
 			driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeOut));
 			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(timeOut));
