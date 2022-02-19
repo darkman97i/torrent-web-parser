@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>info.llort</groupId>
   <artifactId>torrent-web-parser</artifactId>
-  <version>1.4</version>
+  <version>1.5</version>
   <name>Torrent web parser</name>
 
   <developers>
